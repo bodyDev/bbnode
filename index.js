@@ -30,11 +30,26 @@ app.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
+// Views
+app.get('/', function(request, response) {
+  response.render('pages/index');
+});
+// Check Server runs?
+app.get('/api/v1/status',function(req,res){
+
+	var responseJson = {status :"Server runs ok"};
+	res.json(responseJson);
+});
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
 
 /* Server start */
 var server = app.listen(3000, function () {
   var host = server.address().address;
   var port = server.address().port;
 
-  console.log('Example app listening at http://%s:%s', host, port);
+  console.log('Bodybeat is here! http://%s:%s', host, port);
 });

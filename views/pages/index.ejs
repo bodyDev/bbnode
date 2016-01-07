@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <% include ../partials/header.ejs %>
+</head>
+
+<body>
+
+  <% include ../partials/nav.ejs %>
+
+  <div class="jumbotron text-center">
+    <div class="container">
+      <div id="map">
+
+      </div>
+
+      <script type="text/javascript">
+          var map;
+          var infowindow;
+          var service;
+
+          function initMap() {
+            var pyrmont = {lat: 40.9848825, lng: 29.0266023};
+            map = new google.maps.Map(document.getElementById('map'), {
+              center: pyrmont,
+              zoom: 15
+            });
+
+            infowindow = new google.maps.InfoWindow();
+
+            service = new google.maps.places.PlacesService(map);
+            service.nearbySearch({
+              location: pyrmont,
+              radius: 2000,
+              types: ['shopping_mall']
+            }, callback);
+          }
+
+          function callback(results, status,pagination) {
+            var locations = [];
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+              for (var i = 0; i < results.length; i++) {
+                createMarker(results[i]);
+                var request = {
+                  placeId: results[i].place_id
+                };
+                var loc = {
+                      "name":results[i].name,
+                      "place_id":results[i].place_id,
+                      "lat":results[i].geometry.location.lat(),
+                      "lng":results[i].geometry.location.lng(),
+                      "address":results[i].vicinity,
+                      "type":"82"
+                    };
+                        if (pagination.hasNextPage) {
+
+                            pagination.nextPage();
+}
+                service.getDetails(request, function (place, status) {
+                  if (status == google.maps.places.PlacesServiceStatus.OK) {
+
+                    loc = {
+                      "name":place.name,
+                      "place_id":place.place_id,
+                      "lat":place.geometry.location.lat(),
+                      "lng":place.geometry.location.lng(),
+                      "address":place.formatted_address,
+                      "type":"82"
+                    };
+                     
+                     
+                   }
+                });
+                setTimeout(sendData(loc), 1500); // check again in a second
+                     locations.push(loc);
+                     locations[i] = loc;
+                     
+              }
+          }
+          
+        }
+        function sendData(loc){
+            $.ajax({
+                    type: "POST",
+                    url:"/api/location",
+                    contentType: "application/json",
+                    data: JSON.stringify(loc),
+                    success: function () {
+                       var strRow = "<tr><td>"+ loc.name + "</td><td>"+ loc.place_id + "</td><td>"+ loc.lat + "</td>" +           "<td>"+ loc.lng + "</td><td>"+ loc.address + "</td></tr>";
+                            $("#data tbody").append(strRow);
+                    },
+                    error: function(err){
+                            console.log(err);
+                            var strRow1 = "<tr><td>"+ err + "</td></tr>";
+                            $("#data tbody").append(strRow1);
+                    }
+                });
+        }
+          function createMarker(place) {
+            var placeLoc = place.geometry.location;
+            var marker = new google.maps.Marker({
+              map: map,
+              position: place.geometry.location
+            });
+
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.setContent(place.name);
+              infowindow.open(map, this);
+            });
+          }
+
+      </script>
+      <div class="row">
+
+        <table id="data">
+
+          <thead>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          </thead>
+        <tbody>
+
+        </tbody>
+
+        </table>
+
+      </div>  
+    </div>
+  </div>
+</body>
+</html>
