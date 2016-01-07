@@ -1,0 +1,14 @@
+{
+  "name": "bodybeat",
+  "version": "1.0.0",
+  "description": "Fitness is our business",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Behran Kankul",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
