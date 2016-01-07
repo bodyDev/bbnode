@@ -1,6 +1,6 @@
 /*
 	BodyBeat Server 0.0.1
-    By Behran Kankul - 07.01.2015
+    By Behran Kankul - 07.01.2016
     
     Available Modules
     - Welcome (default)
@@ -26,17 +26,13 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(morgan('dev'));
 
 /* App routing */
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-});
-
 // Views
 app.get('/', function(request, response) {
   response.render('pages/index');
 });
 // Check Server runs?
+// v1
 app.get('/api/v1/status',function(req,res){
-
 	var responseJson = {status :"Server runs ok"};
 	res.json(responseJson);
 });
