@@ -25,17 +25,26 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(morgan('dev'));
 
+// External route files for several purposes.
+var loginRouter = require("./routes/login")();
+var registerRouter = require("./routes/register")();
+
 /* App routing */
 // Views
 app.get('/', function(request, response) {
   response.render('pages/index');
 });
+
 // Check Server runs?
 // v1
+// status
 app.get('/api/v1/status',function(req,res){
 	var responseJson = {status :"Server runs ok"};
 	res.json(responseJson);
 });
+// Register
+app.use('/api/v1/register', registerRouter);
+
 app.use(function(err, req, res, next) {
   console.error(err.stack);
   res.status(500).send('Something broke!');
